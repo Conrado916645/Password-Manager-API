@@ -104,3 +104,15 @@ async def admin_unlock_user(user_id: str, db: Session = Depends(get_db)):
     
     logger.info(f"🚨 ADMIN ACTION: Account manually unlocked for user ID '{user_id}'")
     return {"message": "User account successfully unlocked."}
+
+@router.post("/{user_id}/generate-api-key", dependencies=[Depends(require_permission("users", "update"))])
+async def create_api_key(user_id: str, db: Session = Depends(get_db)):
+    raw_key = user_services.generate_service_account_key(db, user_id=user_id)
+    
+    if not raw_key:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    return {
+        "message": "API Key generated successfully. Save this now, you will never see it again.",
+        "api_key": raw_key
+    }

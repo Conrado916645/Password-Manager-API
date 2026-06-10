@@ -4,6 +4,31 @@ from app.models.user import User
 from app.schemas.users import UserCreate, UserUpdate
 from app.core.security import get_password_hash
 from app.core.security import verify_password
+from app.core.logger import logger
+import secrets
+import hashlib
+
+def generate_service_account_key(db: Session, user_id: str):
+    """Generates a raw API key, hashes it, saves the hash, and returns the RAW key ONCE."""
+    user = get_user_by_id(db, user_id)
+    if not user:
+        return None
+
+    raw_api_key = "pn_key_" + secrets.token_urlsafe(32)
+    
+    # 2. Hash it using SHA-256 for the database
+    hashed_key = hashlib.sha256(raw_api_key.encode()).hexdigest()
+    
+    user.is_service_account = True
+    user.api_key_hash = hashed_key
+    user.requires_password_change = False # Machines don't change passwords!
+    
+    db.commit()
+    
+    logger.warning(f"🤖 API Key generated for Service Account '{user.username}'.")
+    
+
+    return raw_api_key
 
 def get_user_by_username(db: Session, username: str):
     """Fetches a user from the database by their username."""

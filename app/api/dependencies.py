@@ -1,43 +1,57 @@
 # app/api/dependencies.py
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException,Security
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.orm import Session
 import jwt
+import hashlib
 
 from app.core.security import SECRET_KEY, ALGORITHM
 from app.core.database import get_db
 from app.models.user import User  
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
+async def get_base_user(
+    token: str = Depends(oauth2_scheme), 
+    api_key: str = Security(api_key_header),
+    db: Session = Depends(get_db)
+):
+    if not token and not api_key:
+        raise HTTPException(status_code=401, detail="Authentication required. Provide a Bearer Token or X-API-Key.")
 
-async def get_base_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """Decodes the JWT and fetches the real user from the database."""
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    user = None
+
+    # 🤖 PATH A: MACHINE LOGIN (API Key)
+    if api_key:
+        # Hash the key they sent to compare it with the DB
+        hashed_key = hashlib.sha256(api_key.encode()).hexdigest()
+        user = db.query(User).filter(User.api_key_hash == hashed_key).first()
         
-        if payload.get("type") != "access":
-            raise HTTPException(status_code=401, detail="Invalid token type. Access token required.")
-            
-        username: str = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token payload")
-            
-    except Exception:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
-        
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid API Key")
 
-    user = db.query(User).filter(User.username == username).first()
-    
+    # 👤 PATH B: HUMAN LOGIN (JWT Token)
+    elif token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            if payload.get("type") != "access":
+                raise HTTPException(status_code=401, detail="Invalid token type.")
+            username: str = payload.get("sub")
+        except Exception:
+            raise HTTPException(status_code=401, detail="Could not validate credentials")
+            
+        user = db.query(User).filter(User.username == username).first()
+
+    # --- COMMON SECURITY CHECKS FOR BOTH ---
     if not user:
         raise HTTPException(status_code=401, detail="User no longer exists")
         
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account deactivated")
         
-    # We return the actual SQLAlchemy User object, not a dictionary!
     return user
-
 
 async def get_current_user(user: User = Depends(get_base_user)):
     """Checks if the user is forced to reset their password."""

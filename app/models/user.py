@@ -15,6 +15,8 @@ class User(Base):
     last_login_at = Column(DateTime(timezone=True), nullable=True)
     status_changed_at = Column(DateTime(timezone=True), nullable=True)
     requires_password_change = Column(Boolean, default=True)
-
     failed_login_attempts = Column(Integer, default=0)
     locked_until = Column(DateTime(timezone=True), nullable=True)
+
+    is_service_account = Column(Boolean, default=False)
+    api_key_hash = Column(String, nullable=True)
