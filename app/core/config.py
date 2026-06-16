@@ -7,10 +7,11 @@ class Settings(BaseSettings):
     SUPER_ADMIN_USERNAME: str
     SUPER_ADMIN_PASSWORD: str
     DOMAIN: str
-
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    
+
+    ENVIRONMENT: str = "development"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

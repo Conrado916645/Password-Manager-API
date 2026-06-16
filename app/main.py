@@ -23,6 +23,8 @@ from app.api.v1.speedtester.api import api_router as speedtester_api_router_v1
 # CENRALIZED LOGGING
 from app.core.logger import logger
 
+
+
 user.Base.metadata.create_all(bind=engine)
 
 # --- Define the Lifespan (Startup/Shutdown events) ---
@@ -40,17 +42,20 @@ app = FastAPI(
     title="Philippine Navy API",
     description="API for managing Philippine Navy applications.",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+
+    docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
+    redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
+    openapi_url="/openapi.json" if settings.ENVIRONMENT == "development" else None,
 )
 
-# uncomment this for production and set the DOMAIN variable in .env to your frontend domain
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=[settings.DOMAIN],
-#     allow_credentials=True,
-#     allow_methods=["*"], 
-#     allow_headers=["*"], 
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.DOMAIN],
+    allow_credentials=True,
+    allow_methods=["*"], 
+    allow_headers=["*"], 
+)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -63,7 +68,6 @@ app.include_router(main_api_auth_v1, prefix="/api/v1")
 async def root():
     return {"message": "Welcome to your personal API!"}
 
-# app/main.py (Update the middleware function)
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
