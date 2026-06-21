@@ -15,7 +15,8 @@ def create_super_admin(db: Session):
         
         super_permissions = {
             "speedtester": ["create", "read", "update", "delete"],
-            "users": ["create", "read", "update", "delete"]
+            "users": ["create", "read", "update", "delete"],
+            "system": ["read", "update"] 
         }
         
         new_admin = User(
