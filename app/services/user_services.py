@@ -7,6 +7,7 @@ from app.core.security import verify_password
 from app.core.logger import logger
 import secrets
 import hashlib
+from sqlalchemy.orm.attributes import flag_modified
 
 def generate_service_account_key(db: Session, user_id: str):
     """Generates a raw API key, hashes it, saves the hash, and returns the RAW key ONCE."""
@@ -59,14 +60,20 @@ def create_user(db: Session, user_in: UserCreate):
     return new_user
 
 def update_user(db: Session, user_id: str, user_in: UserUpdate):
-    """Updates a user's permissions or active status."""
-    user = get_user_by_id(db, user_id)
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return None
 
-    if user_in.is_active is not None and user.is_active != user_in.is_active:
+  
+    if user_in.is_active is not None:
         user.is_active = user_in.is_active
-        user.status_changed_at = datetime.utcnow()
+    
+    # Update JSON field
+    if user_in.permissions is not None:
+        user.permissions = user_in.permissions
+        # 🚨 CRITICAL: Tell SQLAlchemy the JSON dictionary was modified
+        flag_modified(user, "permissions")
+
     db.commit()
     db.refresh(user)
     return user
