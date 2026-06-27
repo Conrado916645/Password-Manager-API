@@ -118,14 +118,14 @@ def soft_delete_user(db: Session, user_id: str):
     """Marks a user as deleted instead of erasing them from the DB."""
     user = get_user_by_id(db, user_id)
     if not user:
-        return False
+        return None
         
     user.is_deleted = True
     user.is_active = False 
     
     db.commit()
     db.refresh(user)
-    return True
+    return user
 
 def get_all_active_users(db: Session):
     return db.query(User).filter(User.is_deleted == False).all()
