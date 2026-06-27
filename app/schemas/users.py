@@ -36,6 +36,7 @@ class UserResponse(BaseModel):
     permissions: dict
     is_active: bool
     created_at: datetime
+    is_deleted: bool
     updated_at: datetime
     last_login_at: Optional[datetime] = None
     status_changed_at: Optional[datetime] = None
