@@ -121,16 +121,8 @@ async def create_api_key(user_id: str, db: Session = Depends(get_db)):
 @router.patch("/me/profile")
 async def update_own_profile(profile_data: UserProfileUpdate, current_user: User = Depends(get_base_user), db: Session = Depends(get_db)
 ):
-    if profile_data.email:
-        current_user.email = profile_data.email
-    if profile_data.full_name:
-        current_user.full_name = profile_data.full_name
-        
-    db.commit()
-    db.refresh(current_user)
-    
-    logger.info(f"User '{current_user.username}' updated their personal profile.")
-    
+    updated_user = user_services.update_user_profile(db, current_user, profile_data)
+    logger.info(f"User '{current_user.username}' updated their profile information.")
     return current_user
 
 @router.delete("/{user_id}", dependencies=[Depends(require_permission("users", "delete"))])

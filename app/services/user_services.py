@@ -143,3 +143,16 @@ def restore_soft_deleted_user(db: Session, user_id: str):
     db.refresh(user)
     return user
 
+def update_user_profile(db: Session, user: User, profile_data: dict):
+    """Updates a user's profile information."""
+    user = get_user_by_id(db, user.id)
+    if not user:
+        return None
+
+    for key, value in profile_data.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
+
+    db.commit()
+    db.refresh(user)
+    return user
