@@ -14,6 +14,8 @@ class User(Base):
     # --- PROFILE INFORMATION ---
     full_name = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
+    date_of_birth = Column(DateTime(timezone=True), nullable=True)
+    email = Column(Boolean, default=False)
 
     # --- PERMISSIONS & SECURITY ---
     permissions = Column(JSON, default={})

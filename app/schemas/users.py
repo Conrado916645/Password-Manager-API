@@ -60,3 +60,6 @@ class UserChangePassword(BaseModel):
 class UserProfileUpdate(BaseModel):
     email: str | None = None
     full_name: str | None = None
+    date_of_birth: datetime | None = None
+    phone_number: str | None = None
+    
