@@ -33,13 +33,6 @@ async def change_own_password(
         
     logger.info(f"User '{current_user.username}' successfully updated their password.")
     return {"message": "Password successfully updated. Full access granted."}
-    
-    if not success:
-        logger.warning(f"Failed personal password change for '{current_user.username}': Incorrect old password.")
-        raise HTTPException(status_code=400, detail="Incorrect current password")
-        
-    logger.info(f"User '{current_user.username}' successfully updated their password and unlocked their account.")
-    return {"message": "Password successfully updated. Full access granted."}
 
 
 @router.patch("/me/profile")
