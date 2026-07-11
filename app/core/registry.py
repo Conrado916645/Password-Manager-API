@@ -8,7 +8,7 @@ APP_REGISTRY = {
     
     # 🚨 ADDED THE SYSTEM MODULE HERE
     # 'read' allows viewing the dashboard. 'update' could be used later for changing global settings.
-    "system": ["read", "update"], 
+    "system": ["read", "create", "update", "delete"],
     
     # "password_manager": ["read", "create", "update", "delete", "share"]  SAMPLE APP, NOT YET IMPLEMENTED
 }
