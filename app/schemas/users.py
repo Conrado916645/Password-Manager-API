@@ -43,6 +43,10 @@ class UserResponse(BaseModel):
     requires_password_change: bool
     failed_login_attempts: int
     locked_until: Optional[datetime] = None
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+    date_of_birth: Optional[datetime] = None
+    phone_number: Optional[str] = None
     class Config:
         from_attributes = True
 
