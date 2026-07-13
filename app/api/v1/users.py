@@ -36,7 +36,7 @@ async def change_own_password(
     return {"message": "Password successfully updated. Full access granted."}
 
 
-@router.patch("/me/profile")
+@router.patch("/me")
 async def update_own_profile(
     profile_data: UserProfileUpdate, 
     current_user: User = Depends(get_current_user), 
