@@ -1,4 +1,4 @@
-#(Backend API)
+# (Backend API)
 
 The core REST API and backend service for the  architecture. Built as a secure, local-first application, this backend provides robust infrastructure monitoring, zero-knowledge credential management, and secure VPN gateway administration.
 
