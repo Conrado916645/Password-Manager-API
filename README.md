@@ -1,14 +1,31 @@
-# 🛡️ FastAPI Enterprise Core
+#(Backend API)
 
-A production-ready, modular FastAPI backend boilerplate featuring Dual-Token JWT Authentication, SQLite with SQLAlchemy, and highly granular Role-Based Access Control (RBAC).
+The core REST API and backend service for the  architecture. Built as a secure, local-first application, this backend provides robust infrastructure monitoring, zero-knowledge credential management, and secure VPN gateway administration.
 
-This architecture is designed to be the "spine" of any modern web application, allowing you to easily plug in new modules and scale effortlessly.
+---
 
-## ✨ Features
+## 🚀 Core Features
 
-* **Granular RBAC:** A powerful dependency factory that allows you to lock down endpoints based on specific modules and actions (e.g., `require_permission("speedtester", "create")`).
-* **Modular Architecture:** Routes, schemas, and models are strictly separated, allowing you to add new apps/modules in a clean, plug-and-play fashion.
-* **Automated Bootstrapping:** Utilizes FastAPI's Lifespan Context Manager to automatically generate a `super_admin` account on the first server boot.
-* **Environment Protection:** Secrets are securely managed via `.env` files using `pydantic-settings`.
-* **Rate Limiting:** Protects endpoints against brute-force attacks using `slowapi` (e.g., 5 requests/minute on login).
-* **CORS Ready:** Pre-configured Middleware to allow seamless connection with frontend frameworks (React, Vue, HTML/JS).
+* **Local-First Architecture:** Designed to run securely on local infrastructure without forced external cloud dependencies.
+* **VPN Manager:** Centralized CRUD management for remote gateways, pre-shared keys (PSK), and connection credentials.
+* **Zero-Knowledge Password Vault:** Secure credential storage utilizing client-side AES-GCM encryption and RSA-OAEP key wrapping. The backend strictly handles ciphertext and never accesses plaintext passwords.
+* **Advanced Authentication:** Secure user sessions protected by JWT (JSON Web Tokens) and Time-based One-Time Password (TOTP) Multi-Factor Authentication.
+* **System Administration:** Built-in role-based access control (RBAC), user lifecycle management, and system health endpoints.
+
+## 🛠️ Technology Stack
+
+* **Framework:** [FastAPI](https://fastapi.tiangolo.com/) - High-performance, asynchronous web framework.
+* **Database & ORM:** [SQLAlchemy](https://www.sqlalchemy.org/) with SQLite (configurable for PostgreSQL).
+* **Data Validation:** [Pydantic](https://docs.pydantic.dev/) - Strict type checking and payload validation.
+* **Security & Cryptography:** `passlib` (bcrypt hashing), `python-jose` (JWT handling), and `pyotp` (MFA generation).
+
+---
+
+## ⚙️ Local Development Setup
+
+Follow these steps to configure and run the backend environment locally.
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/yourusername/infra-sentinel-backend.git](https://github.com/yourusername/infra-sentinel-backend.git)
+cd infra-sentinel-backend
